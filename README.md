@@ -27,7 +27,7 @@ $ git clone https://github.com/steveicarus/iverilog.git && cd iverilog \
         && make install
 ```
 
-It is recommended to use the provided [Dockerfile](https://github.com/NVlabs/verilog-eval/Dockerfile) 
+It is recommended to use the provided [Dockerfile](https://github.com/NVlabs/verilog-eval/blob/main/Dockerfile) 
 which already pre-installed ICARUS Verilog Simulator. Using the docker container
 you would still need to complete the following step.
 
