@@ -1,13 +1,13 @@
 from collections import defaultdict, Counter
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Union, Iterable, Dict
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from typing import List, Union, Iterable, Dict, Tuple, Optional
 import itertools
 
 import numpy as np
 import tqdm
 
-from human_eval.data import HUMAN_EVAL, read_problems, stream_jsonl, write_jsonl
-from human_eval.execution import check_correctness
+from verilog_eval.data import read_problems, stream_jsonl, write_jsonl
+from verilog_eval.execution import check_correctness, clean_up_simulation
 
 
 def estimate_pass_at_k(
@@ -36,12 +36,42 @@ def estimate_pass_at_k(
     return np.array([estimator(int(n), int(c), k) for n, c in zip(num_samples_it, num_correct)])
 
 
+def contain_passing_completion(
+    problem: Dict,
+    completions: List[str],
+    n_workers: int = 4,
+    timeout: float = 30.0,
+    unit_test_length: Optional[int] = None,
+    clean_up: bool = True,
+) -> Tuple[bool, str]:
+
+    with ProcessPoolExecutor(max_workers=n_workers) as executor:
+        
+        futures = []
+        
+        for idx, completion in enumerate(completions):
+            args = (problem, completion, timeout, idx, unit_test_length)
+            future = executor.submit(check_correctness, *args)
+            futures.append(future)
+            
+        for future in as_completed(futures):
+            result = future.result()
+            if result["passed"]:
+                return True, completions[result["completion_id"]]
+            
+    if clean_up:
+        clean_up_simulation()
+            
+    return False, ""
+            
 def evaluate_functional_correctness(
     sample_file: str,
+    problem_file: str,
     k: List[int] = [1, 10, 100],
     n_workers: int = 4,
-    timeout: float = 3.0,
-    problem_file: str = HUMAN_EVAL,
+    timeout: float = 30.0,
+    unit_test: bool = False,
+    clean_up: bool = True,
 ):
     """
     Evaluates the functional correctness of generated samples, and writes
@@ -51,7 +81,7 @@ def evaluate_functional_correctness(
     problems = read_problems(problem_file)
 
     # Check the generated samples against test suites.
-    with ThreadPoolExecutor(max_workers=n_workers) as executor:
+    with ProcessPoolExecutor(max_workers=n_workers) as executor:
 
         futures = []
         completion_id = Counter()
@@ -62,7 +92,10 @@ def evaluate_functional_correctness(
         for sample in tqdm.tqdm(stream_jsonl(sample_file)):
             task_id = sample["task_id"]
             completion = sample["completion"]
-            args = (problems[task_id], completion, timeout, completion_id[task_id])
+            if unit_test:
+                args = (problems[task_id], completion, timeout, completion_id[task_id], 100)
+            else:
+                args = (problems[task_id], completion, timeout, completion_id[task_id])
             future = executor.submit(check_correctness, *args)
             futures.append(future)
             completion_id[task_id] += 1
@@ -74,6 +107,9 @@ def evaluate_functional_correctness(
         for future in tqdm.tqdm(as_completed(futures), total=len(futures)):
             result = future.result()
             results[result["task_id"]].append((result["completion_id"], result))
+    
+    if clean_up:
+        clean_up_simulation()
 
     # Calculate pass@k.
     total, correct = [], []

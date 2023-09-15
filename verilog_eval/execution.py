@@ -9,13 +9,23 @@ import platform
 import signal
 import tempfile
 
+import subprocess
+import re
+from threading import Timer
+
+def clean_up_simulation() -> None:
+    """
+    kill all simulation process.
+    """
+    print("Killing all hanging simulation process.")
+    subprocess.run("pkill iverilog", shell=True)
+    subprocess.run("pkill vvp", shell=True)
 
 def check_correctness(problem: Dict, completion: str, timeout: float,
-                      completion_id: Optional[int] = None) -> Dict:
+                      completion_id: Optional[int] = None, unit_test_length: Optional[int] = None) -> Dict:
     """
     Evaluates the functional correctness of a completion by running the test
     suite provided in the problem. 
-
     :param completion_id: an optional completion ID so we can match
         the results later even if execution finishes asynchronously.
     """
@@ -32,31 +42,75 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             chdir = os.chdir
 
             # Disable functionalities that can make destructive changes to the test.
+# WARNING
+# subprocess.Popen is used to run shell command with calls to iveriog and vvp.
+# Please refer to reliability_guard function for details
             reliability_guard()
 
-            # Construct the check program and run it.
-            check_program = (
-                problem["prompt"] + completion + "\n" +
-                problem["test"] + "\n" +
-                f"check({problem['entry_point']})"
-            )
+            # Output testbench with solution to Verilog file in temp directory.
+            verilog_test = problem["test"] + "\n" + \
+                    problem["prompt"] + "\n" + \
+                    completion
 
+                
+            if unit_test_length:
+                keywords = re.findall("repeat\([0-9]*\)", verilog_test)
+                for words in keywords:
+                    verilog_test = verilog_test.replace(words, "repeat({})".format(unit_test_length))
+                    
+            with open("{}.sv".format(problem["task_id"]), 'w') as f:
+                f.write(verilog_test)
+            
             try:
-                exec_globals = {}
-                with swallow_io():
-                    with time_limit(timeout):
-# WARNING
+# WARNING PLEASE READ
+# The following code use subprocess.Popen to run shell command with calls to iveriog and vvp.
+# Please check that iverilog and vvp are installed and included in your current run path.
+# For installation of Icarus Verilog, please refer to: https://github.com/steveicarus/iverilog
 # This program exists to execute untrusted model-generated code. Although
 # it is highly unlikely that model-generated code will do something overtly
 # malicious in response to this test suite, model-generated code may act
 # destructively due to a lack of model capability or alignment.
 # Users are strongly encouraged to sandbox this evaluation suite so that it 
 # does not perform destructive actions on their host or network. For more 
-# information on how OpenAI sandboxes its code, see the accompanying paper.
+# information on how OpenAI sandboxes its code, see the original OpenAI paper.
 # Once you have read this disclaimer and taken appropriate precautions, 
-# uncomment the following line and proceed at your own risk:
-#                         exec(check_program, exec_globals)
-                result.append("passed")
+# proceed at your own risk:
+# BEGIN CODE BLOCK
+"""
+                with swallow_io():
+                    with time_limit(timeout):
+                        cmd = "iverilog -Wall -Winfloop -Wno-timescale -g2012 \
+                                    -s tb -o test.vvp {}.sv; vvp -n test.vvp".format(problem["task_id"])
+                       
+                        """
+                        adding timeout options for Popen. something breaks if not using timeout. seems to be working for now.
+                        not really sure if its the best/correct way. let me know if anyone has a better solution.
+                        https://stackoverflow.com/questions/1191374/using-module-subprocess-with-timeout
+                        """
+                        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        timer = Timer(timeout, p.kill)
+                        try:
+                            timer.start()
+                            out, err = p.communicate()
+                        finally:
+                            timer.cancel()
+                            
+                        out, err = out.decode("utf-8"), err.decode("utf-8") 
+                        match = re.search(r'Mismatches: ([0-9]*) in ([0-9]*) samples', out)
+                        if "syntax error" in err:
+                            result.append("failed: syntax error.")
+                        elif len(err) > 0:
+                            result.append("failed: compile error.")
+                        elif match:
+                            cor, tot = [int(i) for i in match.groups()]
+                            if cor == 0:
+                                result.append("passed")
+                            else:
+                                result.append(f"failed: {cor} out of {tot} samples.")
+                        else:
+                            result.append("failed: info string not matched.")
+"""
+# END CODE BLOCK
             except TimeoutException:
                 result.append("timed out")
             except BaseException as e:
@@ -66,7 +120,7 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             shutil.rmtree = rmtree
             os.rmdir = rmdir
             os.chdir = chdir
-
+            
     manager = multiprocessing.Manager()
     result = manager.list()
 
@@ -157,10 +211,13 @@ def chdir(root):
 
 def reliability_guard(maximum_memory_bytes: Optional[int] = None):
     """
+    Updated Comment:
+    We have enabled subprocess.Popen to allow shell command calls to verilog 
+    compiler and simulator. Please use at own risk.
+    Original Comment:
     This disables various destructive functions and prevents the generated code
     from interfering with the test (e.g. fork bomb, killing other processes,
     removing filesystem files, etc.)
-
     WARNING
     This function is NOT a security sandbox. Untrusted code, including, model-
     generated code, should not be blindly executed outside of one. See the 
@@ -199,7 +256,7 @@ def reliability_guard(maximum_memory_bytes: Optional[int] = None):
     os.renames = None
     os.truncate = None
     os.replace = None
-    os.unlink = None
+    #os.unlink = None
     os.fchmod = None
     os.fchown = None
     os.chmod = None
@@ -217,8 +274,10 @@ def reliability_guard(maximum_memory_bytes: Optional[int] = None):
     shutil.move = None
     shutil.chown = None
 
-    import subprocess
-    subprocess.Popen = None  # type: ignore
+# WARNING
+# subprocess.Popen is allowed and used to make shell command calls to verilog compiler and simulator.
+    #import subprocess
+    #subprocess.Popen = None  # type: ignore
 
     __builtins__['help'] = None
 

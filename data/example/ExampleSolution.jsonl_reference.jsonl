@@ -1,0 +1,6 @@
+{"task_id": "gatesv", "completion": "\n\tassign out_both = in[2:0] & in[3:1];\n\tassign out_any = in[2:0] | in[3:1];\n\tassign out_different = in^{in[0], in[3:1]};\n\t\nendmodule\n", "result": "passed", "passed": true}
+{"task_id": "gatesv", "completion": "\twire [3:0] any, both;\n\twire [3:0] different;\n\n\tassign both = in[3:2] & in[1:0];\n\tassign any = in[3:2] | in[1:0];\n\tassign different = ~in[0] & in[3:1];\n\n\tassign out_both = both[1:0];\n\tassign out_any = any[1:0];\n\tassign out_different = different[2:0];\nendmodule\n", "result": "failed: 207 out of 213 samples.", "passed": false}
+{"task_id": "vector4", "completion": "\n\tassign out = { {24{in[7]}}, in };\n\t\nendmodule\n", "result": "passed", "passed": true}
+{"task_id": "vector4", "completion": "\tassign out = { 24{in}, in };\nendmodule\n", "result": "failed: syntax error.", "passed": false}
+{"task_id": "zero", "completion": "\t\n\tassign zero = 1'b0;\n\nendmodule\n", "result": "passed", "passed": true}
+{"task_id": "zero", "completion": "   assign zero = 1;\nendmodule\n", "result": "failed: 20 out of 20 samples.", "passed": false}

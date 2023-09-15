@@ -5,8 +5,8 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name="human-eval",
-    py_modules=["human-eval"],
+    name="verilog-eval",
+    py_modules=["verilog-eval"],
     version="1.0",
     description="",
     author="OpenAI",
@@ -19,7 +19,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "evaluate_functional_correctness = human_eval.evaluate_functional_correctness",
+            "evaluate_functional_correctness = verilog_eval.evaluate_functional_correctness",
         ]
     }
 )
