@@ -103,7 +103,7 @@ $ evaluate_functional_correctness --help
 However, we recommend that you use the default values for the rest.
 
 ## Issues
-Problem descriptions in `descriptions/VerilogDescriptions_Machine.jsonl` are machine 
+Problem descriptions in `descriptions/VerilogDescription_Machine.jsonl` are machine 
 generated and we can not guarantee the absense of ambiguity and errors. We do not plan
 to maintain description correctness.
 

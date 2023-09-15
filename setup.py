@@ -9,7 +9,7 @@ setup(
     py_modules=["verilog-eval"],
     version="1.0",
     description="",
-    author="OpenAI",
+    author="NVIDIA",
     packages=find_packages(),
     install_requires=[
         str(r)
