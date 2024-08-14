@@ -1,0 +1,32 @@
+
+I would like you to implement a module named TopModule with the following
+interface. All input and output ports are one bit unless otherwise
+specified.
+
+ - input  a ( 3 bits)
+ - output q (16 bits)
+
+The module should implement a combinational circuit. Read the simulation
+waveforms to determine what the circuit does, then implement it.
+
+  time  a     q
+  0ns   x     x
+  5ns   x     x
+  10ns  x     x
+  15ns  0  1232
+  20ns  1  aee0
+  25ns  2  27d4
+  30ns  3  5a0e
+  35ns  4  2066
+  40ns  5  64ce
+  45ns  6  c526
+  50ns  7  2f19
+  55ns  0  1232
+  60ns  1  aee0
+  65ns  2  27d4
+  70ns  4  2066
+  75ns  1  aee0
+  80ns  1  aee0
+  85ns  3  5a0e
+  90ns  5  64ce
+

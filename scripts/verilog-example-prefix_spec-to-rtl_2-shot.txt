@@ -1,0 +1,84 @@
+Question:
+Implement a hardware module named TopModule with the following interface.
+All input and output ports are one bit unless otherwise specified.
+
+ - input  in_ (8 bits)
+ - output out (8 bits)
+
+The module should implement an incrementer which increments the input by
+one and writes the result to the output. Assume all values are encoded as
+two's complement binary numbers.
+
+Enclose your code with [BEGIN] and [DONE]. Only output the code snippet
+and do NOT output anything else.
+
+Answer:
+[BEGIN]
+module TopModule
+(
+  input  logic [7:0] in_,
+  output logic [7:0] out
+);
+
+  // Combinational logic
+
+  assign out = in_ + 1;
+
+endmodule
+[DONE]
+
+Question:
+Implement a hardware module named TopModule with the following interface.
+All input and output ports are one bit unless otherwise specified.
+
+ - input  clk
+ - input  reset
+ - input  in_ (8 bits)
+ - output out (8 bits)
+
+The module should implement an 8-bit registered incrementer with an
+active-high synchronous reset. The 8-bit input is first registered and
+then incremented by one on the next cycle. The internal state should be
+reset to zero when the reset input is one. Assume all values are encoded
+as two's complement binary numbers. Assume all sequential logic is
+triggered on the positive edge of the clock.
+
+Enclose your code with <CODE> and </CODE>. Only output the code snippet
+and do NOT output anything else.
+
+Answer:
+[BEGIN]
+module TopModule
+(
+  input  logic       clk,
+  input  logic       reset,
+  input  logic [7:0] in_,
+  output logic [7:0] out
+);
+
+  // Sequential logic
+
+  logic [7:0] reg_out;
+
+  always @( posedge clk ) begin
+    if ( reset )
+      reg_out <= 0;
+    else
+      reg_out <= in_;
+  end
+
+  // Combinational logic
+
+  logic [7:0] temp_wire;
+
+  always @(*) begin
+    temp_wire = reg_out + 1;
+  end
+
+  // Structural connections
+
+  assign out = temp_wire;
+
+endmodule
+[DONE]
+

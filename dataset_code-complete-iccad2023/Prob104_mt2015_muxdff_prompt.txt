@@ -1,0 +1,31 @@
+
+Consider this Verilog module "full_module":
+
+  module full_module (
+      input [2:0] r,
+      input L,
+      input clk,
+      output reg [2:0] q
+
+    always @(posedge clk) begin
+      if (L) begin
+        q <= r;
+      end else begin
+        q <= {q[1] ^ q[2], q[0], q[2]};
+      end
+  end
+
+  endmodule
+
+You want to create a hierarchical Verilog design where a flipflop and 2-1
+multiplexer are in a submodule, and that submodule is instantiated three
+times in this code. Create the submodule called "top_module".
+
+module TopModule (
+  input clk,
+  input L,
+  input q_in,
+  input r_in,
+  output reg Q
+);
+

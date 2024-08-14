@@ -1,0 +1,58 @@
+Question:
+Implement a hardware module named TopModule with the following interface.
+All input and output ports are one bit unless otherwise specified.
+
+ - parameter nbits
+ - input     clk
+ - input     reset
+ - input     in_ (nbits)
+ - output    out (nbits)
+
+The module should implement an n-bit registered incrementer where the
+bitwidth is specified by the parameter nbits. The n-bit input is first
+registered and then incremented by one on the next cycle.
+
+Assume all sequential logic is triggered on the positive edge of the
+clock. The reset input is active high synchronous and should reset the
+output to zero.
+
+Enclose your code with <CODE> and </CODE>. Only output the code snippet
+and do NOT output anything else.
+
+Answer:
+<CODE>
+module TopModule
+#(
+  parameter nbits
+)(
+  input  logic             clk,
+  input  logic             reset,
+  input  logic [nbits-1:0] in_,
+  output logic [nbits-1:0] out
+);
+
+  // Sequential logic
+
+  logic [nbits-1:0] reg_out;
+
+  always @( posedge clk ) begin
+    if ( reset )
+      reg_out <= 0;
+    else
+      reg_out <= in_;
+  end
+
+  // Combinational logic
+
+  logic [nbits-1:0] temp_wire;
+
+  always @(*) begin
+    temp_wire = reg_out + 1;
+  end
+
+  // Structural connections
+
+  assign out = temp_wire;
+
+endmodule
+</CODE>

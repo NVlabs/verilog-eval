@@ -1,0 +1,17 @@
+
+I would like you to implement a module named TopModule with the following
+interface. All input and output ports are one bit unless otherwise
+specified.
+
+ - input  clk
+ - input  reset
+ - output ena (4 bits)
+ - output q   (16 bits)
+
+The module should implement a 4-digit BCD (binary-coded decimal) counter.
+Each decimal digit is encoded using 4 bits: q[3:0] is the ones digit,
+q[7:4] is the tens digit, etc. For digits [3:1], also output an enable
+signal indicating when each of the upper three digits should be
+incremented. Include a synchronous active-high reset. Assume all
+sequential logic is triggered on the positive edge of the clock.
+

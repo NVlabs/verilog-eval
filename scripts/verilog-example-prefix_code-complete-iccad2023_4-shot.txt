@@ -1,0 +1,160 @@
+// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+//
+// The module should implement a XOR gate.
+
+module TopModule
+(
+  input  logic in0,
+  input  logic in1,
+  output logic out
+);
+
+  assign out = in0 ^ in1;
+
+endmodule
+
+// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+//
+// The module should implement an 8-bit registered incrementer. The 8-bit
+// input is first registered and then incremented by one on the next cycle.
+//
+// The reset input is active high synchronous and should reset the
+// output to zero.
+
+module TopModule
+(
+  input  logic       clk,
+  input  logic       reset,
+  input  logic [7:0] in_,
+  output logic [7:0] out
+);
+
+  // Sequential logic
+
+  logic [7:0] reg_out;
+
+  always @( posedge clk ) begin
+    if ( reset )
+      reg_out <= 0;
+    else
+      reg_out <= in_;
+  end
+
+  // Combinational logic
+
+  logic [7:0] temp_wire;
+
+  always @(*) begin
+    temp_wire = reg_out + 1;
+  end
+
+  // Structural connections
+
+  assign out = temp_wire;
+
+endmodule
+
+// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+//
+// The module should implement an n-bit registered incrementer where the
+// bitwidth is specified by the parameter nbits. The n-bit input is first
+// registered and then incremented by one on the next cycle.
+//
+// The reset input is active high synchronous and should reset the
+// output to zero.
+
+module TopModule
+#(
+  parameter nbits
+)(
+  input  logic             clk,
+  input  logic             reset,
+  input  logic [nbits-1:0] in_,
+  output logic [nbits-1:0] out
+);
+
+  // Sequential logic
+
+  logic [nbits-1:0] reg_out;
+
+  always @( posedge clk ) begin
+    if ( reset )
+      reg_out <= 0;
+    else
+      reg_out <= in_;
+  end
+
+  // Combinational logic
+
+  logic [nbits-1:0] temp_wire;
+
+  always @(*) begin
+    temp_wire = reg_out + 1;
+  end
+
+  // Structural connections
+
+  assign out = temp_wire;
+
+endmodule
+
+
+// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+//
+// Build a finite-state machine that takes as input a
+// serial bit stream and outputs a one whenever the bit stream contains two
+// consecutive one's. The output is one on the cycle _after_ there are two
+// consecutive one's.
+//
+// The reset input is active high synchronous and should reset the
+// finite-state machine to an appropriate initial state.
+
+module TopModule
+(
+  input  logic clk,
+  input  logic reset,
+  input  logic in_,
+  output logic out
+);
+
+  // State enum
+
+  localparam STATE_A = 2'b00;
+  localparam STATE_B = 2'b01;
+  localparam STATE_C = 2'b10;
+
+  // State register
+
+  logic [1:0] state;
+  logic [1:0] state_next;
+
+  always @(posedge clk) begin
+    if ( reset )
+      state <= STATE_A;
+    else
+      state <= state_next;
+  end
+
+  // Next state combinational logic
+
+  always @(*) begin
+    state_next = state;
+    case ( state )
+      STATE_A: state_next = ( in_ ) ? STATE_B : STATE_A;
+      STATE_B: state_next = ( in_ ) ? STATE_C : STATE_A;
+      STATE_C: state_next = ( in_ ) ? STATE_C : STATE_A;
+    endcase
+  end
+
+  // Output combinational logic
+
+  always @(*) begin
+    out = 1'b0;
+    case ( state )
+      STATE_A: out = 1'b0;
+      STATE_B: out = 1'b0;
+      STATE_C: out = 1'b1;
+    endcase
+  end
+
+endmodule

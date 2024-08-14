@@ -1,0 +1,20 @@
+
+Implement the circuit described by the Karnaugh map below. d is
+don't-care, which means you may choose to output whatever value is
+convenient.
+
+              ab
+   cd   01  00  10  11
+   00 | d | 0 | 1 | 1 |
+   01 | 0 | 0 | d | d |
+   11 | 0 | 1 | 1 | 1 |
+   10 | 0 | 1 | 1 | 1 |
+
+module TopModule (
+  input a,
+  input b,
+  input c,
+  input d,
+  output reg out
+);
+

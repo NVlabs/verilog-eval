@@ -1,0 +1,9 @@
+
+Implement a 2-input NOR gate.
+
+module TopModule (
+  input in1,
+  input in2,
+  output logic out
+);
+

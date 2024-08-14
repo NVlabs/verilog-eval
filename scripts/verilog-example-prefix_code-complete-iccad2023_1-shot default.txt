@@ -1,0 +1,43 @@
+// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+//
+// The module should implement an n-bit registered incrementer where the
+// bitwidth is specified by the parameter nbits. The n-bit input is first
+// registered and then incremented by one on the next cycle.
+//
+// The reset input is active high synchronous and should reset the
+// output to zero.
+
+module TopModule
+#(
+  parameter nbits
+)(
+  input  logic             clk,
+  input  logic             reset,
+  input  logic [nbits-1:0] in_,
+  output logic [nbits-1:0] out
+);
+
+  // Sequential logic
+
+  logic [nbits-1:0] reg_out;
+
+  always @( posedge clk ) begin
+    if ( reset )
+      reg_out <= 0;
+    else
+      reg_out <= in_;
+  end
+
+  // Combinational logic
+
+  logic [nbits-1:0] temp_wire;
+
+  always @(*) begin
+    temp_wire = reg_out + 1;
+  end
+
+  // Structural connections
+
+  assign out = temp_wire;
+
+endmodule

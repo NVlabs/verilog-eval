@@ -1,0 +1,157 @@
+Question:
+Implement a hardware module named TopModule with the following interface.
+All input and output ports are one bit unless otherwise specified.
+
+ - input  in_ (8 bits)
+ - output out (8 bits)
+
+The module should implement an incrementer which increments the input by
+one and writes the result to the output. Assume all values are encoded as
+two's complement binary numbers.
+
+Enclose your code with [BEGIN] and [DONE]. Only output the code snippet
+and do NOT output anything else.
+
+Answer:
+[BEGIN]
+module TopModule
+(
+  input  logic [7:0] in_,
+  output logic [7:0] out
+);
+
+  // Combinational logic
+
+  assign out = in_ + 1;
+
+endmodule
+[DONE]
+
+Question:
+Implement a hardware module named TopModule with the following interface.
+All input and output ports are one bit unless otherwise specified.
+
+ - input  clk
+ - input  reset
+ - input  in_ (8 bits)
+ - output out (8 bits)
+
+The module should implement an 8-bit registered incrementer with an
+active-high synchronous reset. The 8-bit input is first registered and
+then incremented by one on the next cycle. The internal state should be
+reset to zero when the reset input is one. Assume all values are encoded
+as two's complement binary numbers. Assume all sequential logic is
+triggered on the positive edge of the clock.
+
+Enclose your code with <CODE> and </CODE>. Only output the code snippet
+and do NOT output anything else.
+
+Answer:
+[BEGIN]
+module TopModule
+(
+  input  logic       clk,
+  input  logic       reset,
+  input  logic [7:0] in_,
+  output logic [7:0] out
+);
+
+  // Sequential logic
+
+  logic [7:0] reg_out;
+
+  always @( posedge clk ) begin
+    if ( reset )
+      reg_out <= 0;
+    else
+      reg_out <= in_;
+  end
+
+  // Combinational logic
+
+  logic [7:0] temp_wire;
+
+  always @(*) begin
+    temp_wire = reg_out + 1;
+  end
+
+  // Structural connections
+
+  assign out = temp_wire;
+
+endmodule
+[DONE]
+
+Question:
+Implement a hardware module named TopModule with the following interface.
+All input and output ports are one bit unless otherwise specified.
+
+ - input  clk
+ - input  reset
+ - input  in_
+ - output out
+
+The module should implement a finite-state machine that takes as input a
+serial bit stream and outputs a one whenever the bit stream contains two
+consecutive one's. The output is one on the cycle _after_ there are two
+consecutive one's.
+
+Assume all sequential logic is triggered on the positive edge of the
+clock. The reset input is active high synchronous and should reset the
+finite-state machine to an appropriate initial state.
+
+Enclose your code with <CODE> and </CODE>. Only output the code snippet
+and do NOT output anything else.
+
+Answer:
+[BEGIN]
+module TopModule
+(
+  input  logic clk,
+  input  logic reset,
+  input  logic in_,
+  output logic out
+);
+
+  // State enum
+
+  localparam STATE_A = 2'b00;
+  localparam STATE_B = 2'b01;
+  localparam STATE_C = 2'b10;
+
+  // State register
+
+  logic [1:0] state;
+  logic [1:0] state_next;
+
+  always @(posedge clk) begin
+    if ( reset )
+      state <= STATE_A;
+    else
+      state <= state_next;
+  end
+
+  // Next state combinational logic
+
+  always @(*) begin
+    state_next = state;
+    case ( state )
+      STATE_A: state_next = ( in_ ) ? STATE_B : STATE_A;
+      STATE_B: state_next = ( in_ ) ? STATE_C : STATE_A;
+      STATE_C: state_next = ( in_ ) ? STATE_C : STATE_A;
+    endcase
+  end
+
+  // Output combinational logic
+
+  always @(*) begin
+    out = 1'b0;
+    case ( state )
+      STATE_A: out = 1'b0;
+      STATE_B: out = 1'b0;
+      STATE_C: out = 1'b1;
+    endcase
+  end
+
+endmodule
+[DONE]

@@ -1,0 +1,21 @@
+
+Given several input vectors, concatenate them together then split them up
+into several output vectors. There are six 5-bit input vectors: a, b, c,
+d, e, and f, for a total of 30 bits of input. There are four 8-bit output
+vectors: w, x, y, and z, for 32 bits of output. The output should be a
+concatenation of the input vectors followed by two 1 bits (the two 1 bits
+should be in the LSB positions).
+
+module TopModule (
+  input [4:0] a,
+  input [4:0] b,
+  input [4:0] c,
+  input [4:0] d,
+  input [4:0] e,
+  input [4:0] f,
+  output [7:0] w,
+  output [7:0] x,
+  output [7:0] y,
+  output [7:0] z
+);
+

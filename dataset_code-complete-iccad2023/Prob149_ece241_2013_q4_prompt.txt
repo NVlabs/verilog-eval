@@ -1,0 +1,34 @@
+
+A large reservior of water serves several users. In order to keep the
+level of water succificently high, three sensors are placed vertically at
+5-inch intervals. When the water level is above the highest sensor s[3],
+the input flow rate should be zero. When the level is below the lowest
+sensor s[1], the flow rate should be at maximum (both Nominal flow valve
+and Supplemental flow valve opened). The flow rate when the level is
+between the upper and lower sensors is determined by two factors: the
+water level and the level previous to the last sensor change. Each water
+level has a nominal flow rate associated with it as show in the table
+below. If the sensor change indicates that the previous level was lower
+than the current level, the flow rate should be increased by opening the
+Supplemental flow valve (controlled by dfr).
+
+  Water Level           | Sensors Asserted | Nominal Flow Rate Inputs to be Asserted
+  Above s[3]            | s[1], s[2], s[3] | None
+  Between s[3] and s[2] | s[1], s[2]       | fr1
+  Between s[2] and s[1] | s[1]             | fr1, fr2
+  Below s[1]            | None             | fr1, fr2, fr3
+
+Also include an active-high synchronous reset that resets the state
+machine to a state equivalent to if the water level had been low for a
+long time (no sensors asserted, and all four outputs asserted).
+
+module TopModule (
+  input clk,
+  input reset,
+  input [3:1] s,
+  output reg fr3,
+  output reg fr2,
+  output reg fr1,
+  output reg dfr
+);
+

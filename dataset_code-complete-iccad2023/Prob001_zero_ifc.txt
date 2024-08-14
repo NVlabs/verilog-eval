@@ -1,0 +1,4 @@
+
+module TopModule (
+  output zero
+);

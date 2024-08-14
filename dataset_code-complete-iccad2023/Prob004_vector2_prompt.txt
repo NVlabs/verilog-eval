@@ -1,0 +1,8 @@
+
+Build a circuit that reverses the byte order of a 32-bit vector.
+
+module TopModule (
+  input [31:0] in,
+  output [31:0] out
+);
+

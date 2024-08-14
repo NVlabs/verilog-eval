@@ -1,0 +1,28 @@
+Question:
+Implement a hardware module named TopModule with the following interface.
+All input and output ports are one bit unless otherwise specified.
+
+ - input  in_ (8 bits)
+ - output out (8 bits)
+
+The module should implement an incrementer which increments the input by
+one and writes the result to the output. Assume all values are encoded as
+two's complement binary numbers.
+
+Enclose your code with [BEGIN] and [DONE]. Only output the code snippet
+and do NOT output anything else.
+
+Answer:
+[BEGIN]
+module TopModule
+(
+  input  logic [7:0] in_,
+  output logic [7:0] out
+);
+
+  // Combinational logic
+
+  assign out = in_ + 1;
+
+endmodule
+[DONE]

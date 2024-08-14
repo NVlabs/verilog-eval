@@ -1,0 +1,12 @@
+
+Create 8 D flip-flops with active high asynchronous reset. The output
+should be reset to 0. All DFFs should be triggered by the positive edge
+of clk.
+
+module TopModule (
+  input clk,
+  input [7:0] d,
+  input areset,
+  output reg [7:0] q
+);
+

@@ -1,0 +1,16 @@
+
+Consider an n-bit shift register circuit. Inputs E are for enabling
+shift, R for value to load, L is asserted when it should load, and w is
+the input to the first stage of the shift register. Write a Verilog
+module named top_module for one stage of this circuit, including both the
+flip-flop and multiplexers.
+
+module TopModule (
+  input clk,
+  input w,
+  input R,
+  input E,
+  input L,
+  output reg Q
+);
+

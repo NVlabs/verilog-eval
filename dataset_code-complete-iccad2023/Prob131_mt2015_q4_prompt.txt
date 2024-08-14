@@ -1,0 +1,42 @@
+
+Module A implements the boolean function z = (x^y) & x.
+
+Module B can be described by the following simulation waveform:
+
+  time  x  y  z
+  0ns   0  0  1
+  5ns   0  0  1
+  10ns  0  0  1
+  15ns  0  0  1
+  20ns  0  0  1
+  25ns  1  0  0
+  30ns  1  0  0
+  35ns  0  1  0
+  40ns  0  1  0
+  45ns  1  1  1
+  50ns  1  1  1
+  55ns  0  0  1
+  60ns  0  1  0
+  65ns  0  1  0
+  70ns  1  1  1
+  75ns  0  1  0
+  80ns  0  1  0
+  85ns  0  1  0
+  90ns  1  0  0
+
+Now consider a top-level that uses two A submodules and two B submodules.
+The first input of all four submodules is connect to input 'x', and the
+second input of all four submodules is connected to 'y'. The output of
+the first A submodule is connected to a two-input OR, along with the
+output of the first B submodule. The second pair of A and B submodules is
+similarly connected to an AND gate. The output of the OR and the AND is
+connected to an XOR, whose output is 'z'.
+
+Implement this circuit in Verilog.
+
+module TopModule (
+  input x,
+  input y,
+  output z
+);
+

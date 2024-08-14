@@ -1,0 +1,9 @@
+
+Implement the boolean function z = (x^y) & x.
+
+module TopModule (
+  input x,
+  input y,
+  output z
+);
+

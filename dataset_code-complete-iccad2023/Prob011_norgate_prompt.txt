@@ -1,0 +1,9 @@
+
+Create a module that implements a NOR gate.
+
+module TopModule (
+  input a,
+  input b,
+  output out
+);
+

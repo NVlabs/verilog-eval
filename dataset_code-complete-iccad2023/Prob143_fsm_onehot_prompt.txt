@@ -1,0 +1,43 @@
+
+Given the follow state machine with 1 input and 2 outputs (the outputs
+are given as "(out1, out2)"):
+
+  S0 (0, 0) --0--> S0
+  S0 (0, 0) --1--> S1
+  S1 (0, 0) --0--> S0
+  S1 (0, 0) --1--> S2
+  S2 (0, 0) --0--> S0
+  S2 (0, 0) --1--> S3
+  S3 (0, 0) --0--> S0
+  S3 (0, 0) --1--> S4
+  S4 (0, 0) --0--> S0
+  S4 (0, 0) --1--> S5
+  S5 (0, 0) --0--> S8
+  S5 (0, 0) --1--> S6
+  S6 (0, 0) --0--> S9
+  S6 (0, 0) --1--> S7
+  S7 (0, 1) --0--> S0
+  S7 (0, 1) --1--> S7
+  S8 (1, 0) --0--> S0
+  S8 (1, 0) --1--> S1
+  S9 (1, 1) --0--> S0
+  S9 (1, 1) --1--> S1
+
+Suppose this state machine uses one-hot encoding, where state[0] through
+state[9] correspond to the states S0 though S9, respectively. The outputs
+are zero unless otherwise specified.
+
+Write Verilog implementing the state transition logic and output logic
+portions of the state machine (but not the state flip-flops). You are
+given the current state in state[9:0] and must produce next_state[9:0]
+and the two outputs. Derive the logic equations by inspection assuming a
+one-hot encoding.
+
+module TopModule (
+  input in,
+  input [9:0] state,
+  output [9:0] next_state,
+  output out1,
+  output out2
+);
+

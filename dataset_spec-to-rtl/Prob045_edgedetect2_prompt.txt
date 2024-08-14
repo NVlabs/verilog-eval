@@ -1,0 +1,15 @@
+
+I would like you to implement a module named TopModule with the following
+interface. All input and output ports are one bit unless otherwise
+specified.
+
+ - input clk
+ - input in      (8 bits)
+ - input anyedge (8 bits)
+
+Implement a module that for each bit in an 8-bit input vector, detect
+when the input signal changes from one clock cycle to the next (detect
+any edge). The output bit should be set the cycle after a 0 to 1
+transition occurs. Assume all sequential logic is triggered on the
+positive edge of the clock.
+

@@ -1,0 +1,270 @@
+#=========================================================================
+# Makefile
+#=========================================================================
+#
+# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: MIT
+# Author : Christopher Batten, NVIDIA and Nathaniel Pinckney, NVIDIA
+#
+
+#-------------------------------------------------------------------------
+# Basic setup
+#-------------------------------------------------------------------------
+
+# Remove all default implicit rules since they can cause subtle bugs
+# and they just make things run slower
+.SUFFIXES:
+% : %,v
+% : RCS/%,v
+% : RCS/%
+% : s.%
+% : SCCS/s.%
+
+# Default is to build the prereqs of the all target (defined at bottom)
+default : all
+.PHONY : default
+
+src_dir      := @srcdir@
+scripts_dir  := $(src_dir)/scripts
+
+#-------------------------------------------------------------------------
+# Programs
+#-------------------------------------------------------------------------
+
+GENERATE_VERILOG=$(scripts_dir)/sv-generate
+GENERATE_FLAGS = "--model=@model@"
+
+examples=@examples@
+ifeq ($(examples),yes)
+  GENERATE_FLAGS += "--examples=4"
+else
+  GENERATE_FLAGS += "--examples=@examples@"
+endif
+
+rules=@rules@
+ifeq ($(rules),yes)
+  GENERATE_FLAGS += "--rules"
+endif
+
+GENERATE_FLAGS += "--task=@task@"
+
+GENERATE_FLAGS += "--temperature=@temperature@"
+GENERATE_FLAGS += "--top-p=@top_p@"
+
+IVERILOG_COMPILE=@IVERILOG@ -Wall -Winfloop -Wno-timescale -g2012 -s tb
+
+#-------------------------------------------------------------------------
+# Dataset
+#-------------------------------------------------------------------------
+
+dataset_dir = @dataset_dir@
+VPATH = ${dataset_dir}
+include problems.mk
+include samples.mk
+
+# Define prompt files
+
+problem_prompts := $(patsubst %, %_prompt.txt, $(problems))
+
+#-------------------------------------------------------------------------
+# Progress indicator
+#-------------------------------------------------------------------------
+# Here is some neat code that enables a more compact output with a
+# progress indication:
+#
+#  https://stackoverflow.com/questions/451413
+#
+
+REDIRECT_LOG= &>
+REDIRECT_APPEND_LOG= &>>
+VERBOSE:=0
+QUIET=@
+ifeq ($(VERBOSE),1)
+  QUIET=
+  REDIRECT_LOG= 2>&1 | tee
+  REDIRECT_APPEND_LOG= 2>&1 | tee -a
+endif
+
+ifndef ECHO
+
+# Do a dry run of make with with given targets and count number of
+# times we see HIT_MARK which shows up for every instance of ECHO
+
+HIT_TOTAL != $(MAKE) $(MAKECMDGOALS) --dry-run ECHO="HIT_MARK" | grep -c "HIT_MARK"
+
+# Create a counter which will increment every instance of ECHO
+
+HIT_COUNT = $(eval HIT_N != expr $(HIT_N) + 1)$(HIT_N)
+
+# Create the output counter
+
+ECHO = $(scripts_dir)/echo-progress \
+         --nsteps=$(HIT_TOTAL) --stepno=$(HIT_COUNT) --verbose=$(VERBOSE)
+
+endif
+
+#-------------------------------------------------------------------------
+# Template for per-problem rules
+#-------------------------------------------------------------------------
+# The template is instantiated for each of the problems.
+#
+# Arguments:
+#  $(1) : real problem name (ie with underscores, no dashes)
+#
+
+define problem_template
+
+# Figure out number of samples for this problem
+
+sample_num_strs != seq --format "%02g" 1 $$($(1)_num_samples)
+
+# Generate verilog samples
+
+$(1)_sv_samples       := $$(patsubst %, $(1)/$(1)_sample%.sv, $$(sample_num_strs))
+$(1)_sv_generate_logs := $$(patsubst %, $(1)/$(1)_sample%-sv-generate.log, $$(sample_num_strs))
+
+$$($(1)_sv_samples) : %.sv : $(1)_prompt.txt
+	@$$(ECHO) Generating $$(notdir $$@) verilog
+	$$(QUIET) mkdir -p $(1)
+	$$(QUIET) $$(GENERATE_VERILOG) $$(GENERATE_FLAGS) --verbose \
+              --output $$@ $$< \
+              $(REDIRECT_LOG) $$*-sv-generate.log
+
+$(1)-sv-generate : $$($(1)_sv_samples)
+
+pregen_files += $$($(1)_sv_samples)
+pregen_files += $$($(1)_sv_generate_logs)
+
+sv_generate_targets += $$($(1)_sv_samples)
+
+$(1)-sv-generate-clean :
+	rm -rf $$($(1)_sv_samples)
+	rm -rf $$($(1)_sv_generate_logs)
+
+# Test verilog samples
+
+$(1)_sv_iv_test_bins = \
+  $$(patsubst %.sv, %, $$($(1)_sv_samples))
+
+$(1)_sv_iv_test_logs = \
+  $$(patsubst %.sv, %-sv-iv-test.log, $$($(1)_sv_samples))
+
+$$($(1)_sv_iv_test_logs) : %-sv-iv-test.log : %.sv $(1)_test.sv $(1)_ref.sv
+	@$$(ECHO)  Testing $$(notdir $$*) with iverilog
+	-$$(QUIET) $(IVERILOG_COMPILE) -o $$* $$^ \
+               $(REDIRECT_LOG) $$*-sv-iv-test.log
+	-$$(QUIET) timeout 30 ./$$* $(REDIRECT_APPEND_LOG) $$@; \
+             if [[ $$$${PIPESTATUS[0]} == 124 ]]; then    \
+               echo "TIMEOUT" $(REDIRECT_APPEND_LOG) $$@; \
+             fi
+
+$(1)-sv-iv-test : $$($(1)_sv_iv_test_logs)
+
+sv_iv_test_targets += $$($(1)_sv_iv_test_logs)
+
+$(1)-sv-iv-test-clean :
+	rm -rf $$($(1)_sv_iv_test_bins)
+	rm -rf $$($(1)_sv_iv_test_logs)
+
+sv_iv_test_clean_targets += $(1)-sv-iv-test-clean
+
+# Problem-level clean
+
+$(1)-clean :
+	rm -rf $(1)
+
+# Add top-level to junk
+
+junk += $(1)
+
+# Phony targets
+
+.PHONY : $(1)-sv-generate
+.PHONY : $(1)-sv-iv-test
+.PHONY : $(1)-sv-iv-test-clean
+
+endef
+
+$(foreach problem, $(problems), \
+   $(eval $(call problem_template,$(problem))))
+
+#-------------------------------------------------------------------------
+# Top level targets
+#-------------------------------------------------------------------------
+
+sv-generate       : $(sv_generate_targets)
+sv-generate-clean : $(sv_generate_clean_targets)
+sv-iv-test        : $(sv_iv_test_targets)
+sv-iv-test-clean  : $(sv_iv_test_clean_targets)
+
+sv-iv-analyze : $(sv_iv_test_targets)
+	@$(ECHO) Analyzing verilog/iverilog results 
+	$(QUIET) $(scripts_dir)/sv-iv-analyze --csv=summary.csv $(problems) | tee summary.txt
+
+junk += summary.txt summary.csv
+
+#-------------------------------------------------------------------------
+# pregen
+#-------------------------------------------------------------------------
+# Save the generated code and logs so that we can rerun experiments
+# without having to regenerate all of the generated code with an LLM.
+# We use the special $(file make function because the number of files
+# can be so large that it might exceed the command line limit.
+
+pregen_dir := ../../pymtl-eval-pregen
+
+extra_pregen_files = \
+  problems.mk \
+  samples.mk \
+  summary.txt \
+  summary.csv \
+
+ifneq ($(pregen_dir),NOT_ENABLED)
+pregen: $(sv_samples)
+	$(file >  files-to-copy.txt, $(pregen_files))
+	$(file >> files-to-copy.txt, $(extra_pregen_files))
+	sed -i.bak -e 's/ \+/\n/g' files-to-copy.txt
+	rsync --files-from=files-to-copy.txt . \
+    $(pregen_dir)/$(shell date '+%Y-%m-%d-%H-%M')
+	rm files-to-copy.txt files-to-copy.txt.bak
+else
+pregen:
+	@echo "ERROR: pregen directory was not set with configure"
+endif
+
+#-------------------------------------------------------------------------
+# configure information
+#-------------------------------------------------------------------------
+
+dist_junk += \
+  config.status Makefile config.log \
+
+#-------------------------------------------------------------------------
+# Default
+#-------------------------------------------------------------------------
+
+all : sv-iv-analyze
+.PHONY : all
+
+#-------------------------------------------------------------------------
+# Makefile debugging
+#-------------------------------------------------------------------------
+# This handy rule will display the contents of any make variable by
+# using the target debug-<varname>. So for example, make debug-junk will
+# display the contents of the junk variable.
+
+debug-% :
+	@echo $* = $($*)
+
+#-------------------------------------------------------------------------
+# Clean up junk
+#-------------------------------------------------------------------------
+
+clean :
+	rm -rf *~ \#* wave.vcd $(junk)
+
+distclean :
+	rm -rf *~ \#* wave.vcd $(junk) $(dist_junk)
+
+.PHONY : clean
+

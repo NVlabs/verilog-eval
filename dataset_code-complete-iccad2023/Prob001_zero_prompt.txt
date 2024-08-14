@@ -1,0 +1,7 @@
+
+Build a circuit that always outputs a LOW.
+
+module TopModule (
+  output zero
+);
+

@@ -1,0 +1,60 @@
+// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+//
+// The module should implement an incrementer which increments the input by
+// one and writes the result to the output. Assume all values are encoded as
+// two's complement binary numbers.
+
+module TopModule
+(
+  input  logic [7:0] in_,
+  output logic [7:0] out
+);
+
+  // Combinational logic
+
+  assign out = in_ + 1;
+
+endmodule
+
+// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+//
+// The module should implement an 8-bit registered incrementer with an
+// active-high synchronous reset. The 8-bit input is first registered and
+// then incremented by one on the next cycle. The internal state should be
+// reset to zero when the reset input is one. Assume all values are encoded
+// as two's complement binary numbers. Assume all sequential logic is
+// triggered on the positive edge of the clock.
+
+module TopModule
+(
+  input  logic       clk,
+  input  logic       reset,
+  input  logic [7:0] in_,
+  output logic [7:0] out
+);
+
+  // Sequential logic
+
+  logic [7:0] reg_out;
+
+  always @( posedge clk ) begin
+    if ( reset )
+      reg_out <= 0;
+    else
+      reg_out <= in_;
+  end
+
+  // Combinational logic
+
+  logic [7:0] temp_wire;
+
+  always @(*) begin
+    temp_wire = reg_out + 1;
+  end
+
+  // Structural connections
+
+  assign out = temp_wire;
+
+endmodule
+
