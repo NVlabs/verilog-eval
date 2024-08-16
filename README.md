@@ -13,6 +13,8 @@ converted to text-only format.
 
 We closely follow guidance from [HumanEval](https://github.com/openai/human-eval/tree/master).
 
+Please note that these instructions are for VerilogEval v1, not v2.
+
 Make sure to use python 3.7 or later:
 ```
 $ conda create -n codex python=3.7
@@ -22,7 +24,7 @@ $ conda activate codex
 Install [ICARUS Verilog](https://github.com/steveicarus/iverilog):
 ```
 $ git clone https://github.com/steveicarus/iverilog.git && cd iverilog \
-        && git checkout 01441687235135d1c12eeef920f75d97995da333 \
+        && git checkout v12-branch \
         && sh ./autoconf.sh && ./configure && make -j4\
         && make install
 ```
@@ -34,6 +36,7 @@ you would still need to complete the following step.
 Check out and install this repository:
 ```
 $ git clone https://github.com/NVlabs/verilog-eval
+$ git checkout release/1.0.0
 $ pip install -e verilog-eval
 ```
 
