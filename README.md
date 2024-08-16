@@ -29,11 +29,29 @@ which were used for this project:
  - iverilog (v12)
  - python3 (v3.11.0)
 
+**Please note that iverilog v13 (development release) is not supported.**
+
+To install Python 3.11:
+```
+$ conda create -n codex python=3.11
+$ conda activate codex
+```
+
+Install [ICARUS Verilog](https://github.com/steveicarus/iverilog):
+```
+$ git clone https://github.com/steveicarus/iverilog.git && cd iverilog \
+        && git checkout v12-branch \
+        && sh ./autoconf.sh && ./configure && make -j4\
+        && make install
+```
+
 You will also need the following Python packages:
 
 ```
  % pip install langchain langchain-openai langchain-nvidia-ai-endpoints
 ```
+
+We plan to provide a Dockerfile and backwards compatibility mode with a prebuilt jsonl soon.
 
 ### Usage 
 
@@ -44,6 +62,8 @@ mkdir -p build/
 ../configure  --with-task=$task --with-model=$model --with-examples=$shots --with-samples=$samples --with-temperature=$temperature --with-top-p=$top_p
 make
 ```
+
+Evaluation can be sped up by providing the `-j` flag to make, such as `-j4` to run 4 worker processes.
 
 Available tasks are `code-complete-iccad2023` and `spec-to-rtl` with each referencing their corresponding `dataset_$task` directory containig the problems. Problem themselves are identical between the two datasets and only the task format changes.
 
