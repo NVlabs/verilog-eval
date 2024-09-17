@@ -3,22 +3,24 @@ Given the following Moore state machine with 3 input (d, done_counting,
 ack) and 3 outputs (shift_ena, counting, done). Unless otherwise stated in
 the diagram below, assume outputs are 0 and inputs are don't cares.
 
-  S () --d=0--> S
-  S () --d=1--> S1
-  S1 () --d=0--> S
-  S1 () --d=1--> S11
-  S11 () --d=0--> S110
-  S11 () --d=1--> S11
-  S110 () --d=0--> S
-  S110 () --d=1--> B0
-  B0 (shift_ena=1) -- (always go to next cycle) --> B1
-  B1 (shift_ena=1) -- (always go to next cycle) --> B2
-  B2 (shift_ena=1) -- (always go to next cycle) --> B3
-  B3 (shift_ena=1) -- (always go to next cycle) --> Count
-  Count (counting=1) --!(done_counting)--> Count
-  Count (counting=1) --(done_counting)--> Wait
-  Wait (done=1) --ack=0--> Wait
-  Wait (done=1) --ack=1--> S
+state   (output)      --input--> next state
+-------------------------------------------
+  S     ()            --d=0--> S
+  S     ()            --d=1--> S1
+  S1    ()            --d=0--> S
+  S1    ()            --d=1--> S11
+  S11   ()            --d=0--> S110
+  S11   ()            --d=1--> S11
+  S110  ()            --d=0--> S
+  S110  ()            --d=1--> B0
+  B0    (shift_ena=1) --(always go to next cycle)--> B1
+  B1    (shift_ena=1) --(always go to next cycle)--> B2
+  B2    (shift_ena=1) --(always go to next cycle)--> B3
+  B3    (shift_ena=1) --(always go to next cycle)--> Count
+  Count (counting=1)  --done_counting=0--> Count
+  Count (counting=1)  --done_counting=1--> Wait
+  Wait  (done=1)      --ack=0--> Wait
+  Wait  (done=1)      --ack=1--> S
 
 At reset, the state machine starts in state "S". Derive next-state logic
 equations and output logic equations by inspection assuming the following
@@ -29,16 +31,16 @@ Derive state transition and output logic equations by inspection assuming
 a one-hot encoding. Implement only the state transition logic and output
 logic (the combinational logic portion) for this state machine.
 
-Write code that generates the following equations:
+Write code that generates the following signals:
 
-  - B3_next -- next-state logic for state B3
-  - S_next
-  - S1_next
-  - Count_next
-  - Wait_next
-  - done -- output logic
-  - counting
-  - shift_ena
+ - B3_next -- Assert when next-state is B3 state
+ - S_next -- Assert when next-state is S state
+ - S1_next -- Assert when next-state is S1 state
+ - Count_next -- Assert when next-state is Count state
+ - Wait_next -- Assert when next-state is Wait state
+ - done -- output logic
+ - counting -- output logic
+ - shift_ena -- output logic
 
 module TopModule (
   input d,

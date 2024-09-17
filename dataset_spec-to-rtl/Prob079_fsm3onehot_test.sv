@@ -10,32 +10,13 @@ module stimulus_gen (
 	input tb_match
 );
 
-	int errored1 = 0;
-	int onehot_error = 0;
-	
 	initial begin
 		// Test the one-hot cases first.
 		repeat(200) @(posedge clk, negedge clk) begin
 			state <= 1<< ($unsigned($random) % 4);
 			in <= $random;
-			if (!tb_match) onehot_error++;
 		end
 			
-			
-		// Random.
-		errored1 = 0;
-		repeat(400) @(posedge clk, negedge clk) begin
-			state <= $random;
-			in <= $random;
-			if (!tb_match)
-				errored1++;
-		end
-		if (!onehot_error && errored1) 
-			$display ("Hint: Your circuit passed when given only one-hot inputs, but not with random inputs.");
-
-		if (!onehot_error && errored1)
-			$display("Hint: Are you doing something more complicated than deriving state transition equations by inspection?\n");
-
 		#1 $finish;
 	end
 	

@@ -6,7 +6,7 @@ Build this circuit in Verilog.
 
 Input x goes to three different two-input gates: a XOR, an AND, and a OR
 gate. Each of the three gates is connected to the input of a D flip-flop
-and then the flip-flop outputs all go to a three-input XNOR, whose output
+and then the flip-flop outputs all go to a three-input NOR, whose output
 is Z. The second input of the XOR is its corresponding flip-flop's
 output, the second input of the AND is its corresponding flip-flop's
 complemented output, and finally the second input of the OR is its

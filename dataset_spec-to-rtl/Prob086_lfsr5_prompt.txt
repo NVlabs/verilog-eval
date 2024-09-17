@@ -9,11 +9,11 @@ specified.
 
 A linear feedback shift register is a shift register usually with a few
 XOR gates to produce the next state of the shift register. A Galois LFSR
-is one particular arrangement where bit positions with a "tap" are XORed
-with the output bit to produce its next value, while bit positions
-without a tap shift. If the taps positions are carefully chosen, the LFSR
-can be made to be "maximum-length". A maximum-length LFSR of n bits
-cycles through 2**n-1 states before repeating (the all-zero state is
+is one particular arrangement that shifts right, where a bit position with
+a "tap" is XORed with the LSB output bit (q[0]) to produce its next value,
+while bit positions without a tap shift right unchanged.  If the taps positions
+are carefully chosen, the LFSR can be made to be "maximum-length". A maximum-length
+LFSR of n bits cycles through 2**n-1 states before repeating (the all-zero state is
 never reached).
 
 The module should implement a 5-bit maximal-length Galois LFSR with taps

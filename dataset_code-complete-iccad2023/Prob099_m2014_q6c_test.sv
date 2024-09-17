@@ -11,38 +11,13 @@ module stimulus_gen (
 	input tb_match
 );
 
-	int errored1 = 0;
-	int onehot_error = 0;
-	int temp;
-	
 	initial begin
 		// Test the one-hot cases first.
 		repeat(200) @(posedge clk, negedge clk) begin
 			y <= 1<< ($unsigned($random) % 6);
 			w <= $random;
-			if (!tb_match) onehot_error++;
-		end
-			
-			
-		// Random.
-		errored1 = 0;
-		repeat(400) @(posedge clk, negedge clk) begin
-			do 
-				temp = $random;
-			while ( !{temp[6:5],temp[3:2]} == !{temp[4],temp[1]} );	
-			// Make y[4,1] and y[6,5,3,2] mutually exclusive, so we can accept Y4=(~y[1] & ~y[4]) &w as a valid answer too.
-
-			y[6:1] <= temp[6:1];
-			w <= $random;
-			if (!tb_match)
-				errored1++;
-		end
-		if (!onehot_error && errored1) 
-			$display ("Hint: Your circuit passed when given only one-hot inputs, but not with semi-random inputs.");
-
-		if (!onehot_error && errored1)
-			$display("Hint: Are you doing something more complicated than deriving state transition equations by inspection?\n");
-
+		end	
+	
 		#1 $finish;
 	end
 	

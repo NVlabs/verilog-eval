@@ -1,7 +1,7 @@
 
 For each bit in an 8-bit vector, detect when the input signal changes
 from one clock cycle to the next (detect any edge). The output bit should
-be set the cycle after a 0 to 1 transition occurs.
+be set the cycle after a 0 to 1 or 1 to 0 transition occurs.
 
 module TopModule (
   input clk,

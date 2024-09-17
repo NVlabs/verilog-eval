@@ -35,11 +35,18 @@ are given as "(out1, out2)"):
 
 Suppose this state machine uses one-hot encoding, where state[0] through
 state[9] correspond to the states S0 though S9, respectively. The outputs
-are zero unless otherwise specified.
+are zero unless otherwise specified. The next_state[0] through next_state[9] 
+correspond to the transition to next states S0 though S9. For example, The 
+next_state[1] is set to 1 when the next state is S1 , otherwise, it is set to 0.
+
+Here, the input state[9:0] can be a combinational of multiple states, and 
+the TopModule is expected to response.
+For example: 
+When the state[9:0] = 10'b0000010100, state[4] == 1, and state[2] == 1, the 
+states includes S4, and S2 states.
 
 The module should implement the state transition logic and output logic
 portions of the state machine (but not the state flip-flops). You are
-given the current state in state[9:0] and must produce next_state[9:0]
-and the two outputs. Derive the logic equations by inspection assuming a
-one-hot encoding.
+given the current state in state[9:0] and must implement next_state[9:0] 
+and the two outputs.
 

@@ -26,11 +26,6 @@ module stimulus_gen (
 		#1;
 	endtask	
 
-
-
-	int errored1 = 0;
-	int errored2 = 0;
-	int onehot_error = 0;
 	reg [9:0] state_error = 10'h0;
 	
 	initial begin
@@ -59,34 +54,7 @@ module stimulus_gen (
 		repeat(200) @(posedge clk, negedge clk) begin
 			state <= 1<< ($unsigned($random) % 10);
 			in <= $random;
-			if (!tb_match) onehot_error++;
 		end
-		
-		// Two-hot.
-		errored1 = 0;
-		repeat(400) @(posedge clk, negedge clk) begin
-			state <= (1<< ($unsigned($random) % 10)) | (1<< ($unsigned($random) % 10));
-			in <= $random;
-			if (!tb_match)
-				errored1++;
-		end
-		
-		if (!onehot_error && errored1) 
-			$display ("Hint: Your circuit passed when given only one-hot inputs, but not with two-hot inputs.");
-		
-		// Random.
-		errored2 = 0;
-		repeat(800) @(posedge clk, negedge clk) begin
-			state <= $random;
-			in <= $random;
-			if (!tb_match)
-				errored2++;
-		end
-		if (!onehot_error && errored2) 
-			$display ("Hint: Your circuit passed when given only one-hot inputs, but not with random inputs.");
-
-		if (!onehot_error && (errored1 || errored2))
-			$display("Hint: Are you doing something more complicated than deriving state transition equations by inspection?\n");
 		
 		for (int i=0;i<$bits(state_error);i++)
 			$display("Hint: next_state[%0d] is %s.", i, (state_error[i] === 1'b0) ? "correct": "incorrect");

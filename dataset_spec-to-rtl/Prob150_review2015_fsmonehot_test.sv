@@ -9,13 +9,7 @@ module stimulus_gen (
 	output reg [9:0] state,
 	input tb_match
 );
-	bit failed = 0;
-	bit fail_onehot = 0;
-	
-	always @(posedge clk, negedge clk)
-		if (!tb_match) 
-			failed <= 1;
-	
+
 	initial begin
 		{d, done_counting, ack} <= 3'h0;
 		state <= 10'h0;
@@ -23,20 +17,6 @@ module stimulus_gen (
 		repeat(300) @(posedge clk, negedge clk) begin
 			{d, done_counting, ack} = $random;
 			state <= 1<< ($unsigned($random) % 10);
-		end
-
-		@(posedge clk) fail_onehot <= failed;
-
-		repeat(3000) @(posedge clk, negedge clk) begin
-			{d, done_counting, ack} = $random;
-			state <= $random;
-		end
-
-		
-		@(posedge clk);
-		if (!fail_onehot && failed) begin
-			$display ("Hint: Your circuit passed when given only one-hot inputs, but not with random inputs.");
-			$display ("Hint: Are you doing something more complicated than deriving state transition equations by inspection?\n");
 		end
 
 		#1 $finish;

@@ -5,7 +5,7 @@ specified.
 
  - input  clk
  - input  reset
- - output ena (4 bits)
+ - output ena (3 bits)
  - output q   (16 bits)
 
 The module should implement a 4-digit BCD (binary-coded decimal) counter.
