@@ -17,7 +17,7 @@ result = subprocess.run(command, shell=True, capture_output=True, text=True)
 data = result.stdout
 
 # Parse the output data
-pattern = re.compile(r'\./build_(\S+)_(\S+)_shots(\d+)_n(\d+)/summary\.txt:pass_rate\s+=\s+(\d+\.\d+)')
+pattern = re.compile(r'\./build_([^_\s]+)_(\S+)_shots(\d+)_n(\d+)/summary\.txt:pass_rate\s+=\s+(\d+\.\d+)')
 matches = pattern.findall(data)
 
 # Organize data into a dictionary

@@ -1,4 +1,4 @@
-// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+// Implement the Verilog module based on the following description. Assume that signals are positive clock/clk triggered unless otherwise stated.
 //
 // The module should implement an incrementer which increments the input by
 // one and writes the result to the output. Assume all values are encoded as

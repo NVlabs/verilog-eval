@@ -16,11 +16,11 @@ Assume all sequential logic is triggered on the positive edge of the
 clock. The reset input is active high synchronous and should reset the
 output to zero.
 
-Enclose your code with <CODE> and </CODE>. Only output the code snippet
+Enclose your code with [BEGIN] and [DONE]. Only output the code snippet
 and do NOT output anything else.
 
 Answer:
-<CODE>
+[BEGIN]
 module TopModule
 #(
   parameter nbits
@@ -55,4 +55,4 @@ module TopModule
   assign out = temp_wire;
 
 endmodule
-</CODE>
+[DONE]

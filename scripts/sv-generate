@@ -78,6 +78,7 @@ openai_models = [
   "gpt-3.5-turbo",
   "gpt-4",
   "gpt-4-turbo",
+  "gpt-4o",
 ]
 
 nim_chat_models = [
@@ -95,7 +96,9 @@ nim_chat_models = [
 ]
 
 manual_models = [
-  'manual-rtl-coder'
+  'manual-rtl-coder',
+  'manual-deepseek-coder-6.7b',
+  'manual-deepseek-coder-33b'
 ]
 
 model_aliases = {
@@ -137,7 +140,7 @@ prompts = {}
 
 prompts['code-complete-iccad2023'] = {
   'system_msg' : """
-You only complete chats with syntax correct Verilog code. End the Verilog module code completion with 'endmodule'. Do not include module, input and output definitions
+You only complete chats with syntax correct Verilog code. End the Verilog module code completion with 'endmodule'. Do not include module, input and output definitions.
 """,
   'prompt_prefix' : """
 // Implement the Verilog module based on the following description. Assume that signals are positive clock/clk triggered unless otherwise stated.
@@ -146,8 +149,7 @@ You only complete chats with syntax correct Verilog code. End the Verilog module
 
 prompts['spec-to-rtl'] = {
   'system_msg' : """
-You are a Verilog RTL designer that only writes code using correct
-Verilog syntax.
+You are a Verilog RTL designer that only writes code using correct Verilog syntax.
 """,
   'prompt_prefix' : ""
 }
@@ -161,17 +163,17 @@ Verilog syntax.
 prompt_rules_suffix="""
 Here are some additional rules and coding conventions.
 
- - declare all ports and signals as logic; do not to use wire or reg
+ - Declare all ports and signals as logic; do not to use wire or reg.
 
- - for combinational logic with an always block do not explicitly specify
-   the sensitivity list; instead use always @(*)
+ - For combinational logic with an always block do not explicitly specify
+   the sensitivity list; instead use always @(*).
 
- - all sized numeric constants must have a size greater than zero
-   (e.g, 0'b0 is not a valid expression)
+ - All sized numeric constants must have a size greater than zero
+   (e.g, 0'b0 is not a valid expression).
 
- - an always block must read at least one signal otherwise it will never
+ - An always block must read at least one signal otherwise it will never
    be executed; use an assign statement instead of an always block in
-   situations where there is no need to read any signals
+   situations where there is no need to read any signals.
 
  - if the module uses a synchronous reset signal, this means the reset
    signal is sampled with respect to the clock. When implementing a

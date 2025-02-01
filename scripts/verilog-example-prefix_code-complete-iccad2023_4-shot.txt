@@ -1,4 +1,4 @@
-// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+// Implement the Verilog module based on the following description. Assume that signals are positive clock/clk triggered unless otherwise stated.
 //
 // The module should implement a XOR gate.
 
@@ -13,7 +13,7 @@ module TopModule
 
 endmodule
 
-// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+// Implement the Verilog module based on the following description. Assume that signals are positive clock/clk triggered unless otherwise stated.
 //
 // The module should implement an 8-bit registered incrementer. The 8-bit
 // input is first registered and then incremented by one on the next cycle.
@@ -54,7 +54,7 @@ module TopModule
 
 endmodule
 
-// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+// Implement the Verilog module based on the following description. Assume that signals are positive clock/clk triggered unless otherwise stated.
 //
 // The module should implement an n-bit registered incrementer where the
 // bitwidth is specified by the parameter nbits. The n-bit input is first
@@ -99,7 +99,7 @@ module TopModule
 endmodule
 
 
-// Implement the Verilog module based on the following description. Assume that sigals are positive clock/clk triggered unless otherwise stated.
+// Implement the Verilog module based on the following description. Assume that signals are positive clock/clk triggered unless otherwise stated.
 //
 // Build a finite-state machine that takes as input a
 // serial bit stream and outputs a one whenever the bit stream contains two

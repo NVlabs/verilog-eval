@@ -43,7 +43,7 @@ reset to zero when the reset input is one. Assume all values are encoded
 as two's complement binary numbers. Assume all sequential logic is
 triggered on the positive edge of the clock.
 
-Enclose your code with <CODE> and </CODE>. Only output the code snippet
+Enclose your code with [BEGIN] and [DONE]. Only output the code snippet
 and do NOT output anything else.
 
 Answer:

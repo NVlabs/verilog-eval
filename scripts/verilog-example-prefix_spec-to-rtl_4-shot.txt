@@ -9,11 +9,11 @@ All input and output ports are one bit unless otherwise specified.
 
 The module should implement a XOR gate.
 
-Enclose your code with <CODE> and </CODE>. Only output the code snippet
+Enclose your code with [BEGIN] and [DONE]. Only output the code snippet
 and do NOT output anything else.
 
 Answer:
-<CODE>
+[BEGIN]
 module TopModule
 (
   input  logic in0,
@@ -24,7 +24,7 @@ module TopModule
   assign out = in0 ^ in1;
 
 endmodule
-</CODE>
+[DONE]
 
 Question:
 Implement a hardware module named TopModule with the following interface.
@@ -42,11 +42,11 @@ Assume all sequential logic is triggered on the positive edge of the
 clock. The reset input is active high synchronous and should reset the
 output to zero.
 
-Enclose your code with <CODE> and </CODE>. Only output the code snippet
+Enclose your code with [BEGIN] and [DONE]. Only output the code snippet
 and do NOT output anything else.
 
 Answer:
-<CODE>
+[BEGIN]
 module TopModule
 (
   input  logic       clk,
@@ -79,7 +79,7 @@ module TopModule
   assign out = temp_wire;
 
 endmodule
-</CODE>
+[DONE]
 
 Question:
 Implement a hardware module named TopModule with the following interface.
@@ -99,11 +99,11 @@ Assume all sequential logic is triggered on the positive edge of the
 clock. The reset input is active high synchronous and should reset the
 output to zero.
 
-Enclose your code with <CODE> and </CODE>. Only output the code snippet
+Enclose your code with [BEGIN] and [DONE]. Only output the code snippet
 and do NOT output anything else.
 
 Answer:
-<CODE>
+[BEGIN]
 module TopModule
 #(
   parameter nbits
@@ -138,7 +138,7 @@ module TopModule
   assign out = temp_wire;
 
 endmodule
-</CODE>
+[DONE]
 
 Question:
 Implement a hardware module named TopModule with the following interface.
@@ -158,11 +158,11 @@ Assume all sequential logic is triggered on the positive edge of the
 clock. The reset input is active high synchronous and should reset the
 finite-state machine to an appropriate initial state.
 
-Enclose your code with <CODE> and </CODE>. Only output the code snippet
+Enclose your code with [BEGIN] and [DONE]. Only output the code snippet
 and do NOT output anything else.
 
 Answer:
-<CODE>
+[BEGIN]
 module TopModule
 (
   input  logic clk,
@@ -212,4 +212,4 @@ module TopModule
   end
 
 endmodule
-</CODE>
+[DONE]
