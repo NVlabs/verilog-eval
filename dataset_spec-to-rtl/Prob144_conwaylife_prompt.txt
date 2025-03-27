@@ -8,7 +8,7 @@ specified.
  - input  data (256 bits)
  - output q (256 bits)
 
-The module should implemement a "game" played on a two-dimensional grid
+The module should impalement a "game" played on a two-dimensional grid
 of cells, where each cell is either 1 (alive) or 0 (dead). At each time
 step, each cell changes state depending on how many neighbours it has:
 

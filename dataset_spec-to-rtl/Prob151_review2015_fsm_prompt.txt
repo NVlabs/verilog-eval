@@ -27,7 +27,7 @@ The serial data is available on the data input pin. When the pattern 1101
 is received, the state machine must then assert output shift_ena for
 exactly 4 clock cycles. After that, the state machine asserts its
 counting output to indicate it is waiting for the counters, and waits
-until input done_counting is high.At that point, the state machine must
+until input done_counting is high. At that point, the state machine must
 assert done to notify the user the timer has timed out, and waits until
 input ack is 1 before being reset to look for the next occurrence of the
 start sequence (1101). The state machine should have a active high

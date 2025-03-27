@@ -45,7 +45,7 @@ these conditions are satisfied, fall has higher precedence than dig,
 which has higher precedence than switching directions.)
 
 Implement a Moore state machine that models this behaviour. areset is
-positive edge triggered asynchronous reseting the Lemming machine to walk
+positive edge triggered asynchronous resetting the Lemming machine to walk
 left. Assume all sequential logic is triggered on the positive edge of
 the clock.
 

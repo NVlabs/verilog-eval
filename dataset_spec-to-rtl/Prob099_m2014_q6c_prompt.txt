@@ -27,9 +27,9 @@ Resets into state A. For this part, assume that a one-hot code is used
 with the state assignment y[5:0] = 000001, 000010, 000100, 001000,
 010000, 100000 for states A, B,..., F, respectively.
 
-The module shou module ment the next-state signals Y2 and Y4
+The module should implement the next-state signals Y2 and Y4
 corresponding to signal y[1] and y[3]. Derive the logic equations by
 inspection assuming the one-hot encoding.
  implement the next-state signals  and corresponding to
-signal y[1] and y[3]Derive the logic equations byinspection assuming the one-hot encoding.
+signal y[1] and y[3]Derive the logic equations by inspection assuming the one-hot encoding.
 

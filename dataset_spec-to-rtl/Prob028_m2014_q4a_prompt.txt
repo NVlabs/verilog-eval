@@ -7,5 +7,5 @@ specified.
  - input  ena
  - output q
 
-The module should impement a D latch using an always block.
+The module should implement a D latch using an always block.
 

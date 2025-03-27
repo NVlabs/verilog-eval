@@ -9,6 +9,6 @@ specified.
  - output cout
  - output sum
 
-The module should impement a full adder. A full adder adds three bits
+The module should implement a full adder. A full adder adds three bits
 (including carry-in) and produces a sum and carry-out.
 

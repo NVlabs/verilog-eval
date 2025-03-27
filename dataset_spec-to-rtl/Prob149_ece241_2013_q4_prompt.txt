@@ -11,8 +11,8 @@ specified.
  - output fr0
  - output dfr
 
-A large reservior of water serves several users. In order to keep the
-level of water succificently high, three sensors are placed vertically at
+A large reservoir of water serves several users. In order to keep the
+level of water sufficiently high, three sensors are placed vertically at
 5-inch intervals. When the water level is above the highest sensor s[2],
 the input flow rate should be zero. When the level is below the lowest
 sensor s[0], the flow rate should be at maximum (both Nominal flow valve
