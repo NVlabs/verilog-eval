@@ -66,14 +66,12 @@ module tb();
 		.x,
 		.y );
 	RefModule good1 (
-		.clk,
 		.x,
 		.y,
 		.Y0(Y0_ref),
 		.z(z_ref) );
 		
 	TopModule top_module1 (
-		.clk,
 		.x,
 		.y,
 		.Y0(Y0_dut),

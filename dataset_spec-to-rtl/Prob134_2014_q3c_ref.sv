@@ -1,6 +1,5 @@
 
 module RefModule (
-  input clk,
   input x,
   input [2:0] y,
   output reg Y0,

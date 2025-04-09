@@ -27,9 +27,9 @@ module RefModule (
   always@(posedge clk, posedge areset)
     if (areset) begin
       for (integer i=0; i<2**n; i=i+1)
-        pht[i] = LNT;
-      predict_history_r = 0;
-        end  else begin
+        pht[i] <= LNT;
+      predict_history_r <= 0;
+    end else begin
       if (predict_valid)
         predict_history_r <= {predict_history_r, predict_taken};
       if(train_valid) begin

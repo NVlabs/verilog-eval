@@ -7,7 +7,8 @@ specified.
  - input  w
  - output Y1
 
-The module should implement the state machine shown below:
+The module should implement part of the next-state logic in the state
+machine shown below:
 
   A (0) --0--> B
   A (0) --1--> A
