@@ -6,7 +6,7 @@ module RefModule (
 );
 
   initial
-    out = 0;
+    out = 1'hx;
 
   always@(posedge clk) begin
     out <= in ^ out;

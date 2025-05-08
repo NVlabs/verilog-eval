@@ -6,7 +6,7 @@ module RefModule (
 );
 
   initial
-    q = 8'h0;
+    q = 8'hx;
 
   always @(posedge clk)
     q <= d;
