@@ -8,3 +8,13 @@
 build*/
 autom4te.cache/
 
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Testing results
+results/
+model_check_results.json
+
