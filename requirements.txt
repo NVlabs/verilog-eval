@@ -1,0 +1,16 @@
+# VerilogEval Ollama Testing - Python Dependencies
+#
+# Install all dependencies with:
+#   pip install -r requirements.txt
+#
+# Or install individually:
+#   pip install ollama tqdm requests
+
+# Ollama Python SDK for calling local Ollama models
+ollama>=0.1.0
+
+# Progress bar for better UX
+tqdm>=4.65.0
+
+# HTTP requests for checking Ollama service
+requests>=2.28.0
