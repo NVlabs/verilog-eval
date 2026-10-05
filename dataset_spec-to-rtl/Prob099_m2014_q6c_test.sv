@@ -28,10 +28,10 @@ module tb();
 	typedef struct packed {
 		int errors;
 		int errortime;
-		int errors_Y2;
-		int errortime_Y2;
-		int errors_Y4;
-		int errortime_Y4;
+		int errors_Y1;
+		int errortime_Y1;
+		int errors_Y3;
+		int errortime_Y3;
 
 		int clocks;
 	} stats;
@@ -49,14 +49,14 @@ module tb();
 
 	logic [6:1] y;
 	logic w;
-	logic Y2_ref;
-	logic Y2_dut;
-	logic Y4_ref;
-	logic Y4_dut;
+	logic Y1_ref;
+	logic Y1_dut;
+	logic Y3_ref;
+	logic Y3_dut;
 
 	initial begin 
 		$dumpfile("wave.vcd");
-		$dumpvars(1, stim1.clk, tb_mismatch ,y,w,Y2_ref,Y2_dut,Y4_ref,Y4_dut );
+		$dumpvars(1, stim1.clk, tb_mismatch ,y,w,Y1_ref,Y1_dut,Y3_ref,Y3_dut );
 	end
 
 
@@ -71,14 +71,14 @@ module tb();
 	RefModule good1 (
 		.y,
 		.w,
-		.Y2(Y2_ref),
-		.Y4(Y4_ref) );
+		.Y1(Y1_ref),
+		.Y3(Y3_ref) );
 		
 	TopModule top_module1 (
 		.y,
 		.w,
-		.Y2(Y2_dut),
-		.Y4(Y4_dut) );
+		.Y1(Y1_dut),
+		.Y3(Y3_dut) );
 
 	
 	bit strobe = 0;
@@ -91,10 +91,10 @@ module tb();
 
 	
 	final begin
-		if (stats1.errors_Y2) $display("Hint: Output '%s' has %0d mismatches. First mismatch occurred at time %0d.", "Y2", stats1.errors_Y2, stats1.errortime_Y2);
-		else $display("Hint: Output '%s' has no mismatches.", "Y2");
-		if (stats1.errors_Y4) $display("Hint: Output '%s' has %0d mismatches. First mismatch occurred at time %0d.", "Y4", stats1.errors_Y4, stats1.errortime_Y4);
-		else $display("Hint: Output '%s' has no mismatches.", "Y4");
+		if (stats1.errors_Y1) $display("Hint: Output '%s' has %0d mismatches. First mismatch occurred at time %0d.", "Y1", stats1.errors_Y1, stats1.errortime_Y1);
+		else $display("Hint: Output '%s' has no mismatches.", "Y1");
+		if (stats1.errors_Y3) $display("Hint: Output '%s' has %0d mismatches. First mismatch occurred at time %0d.", "Y3", stats1.errors_Y3, stats1.errortime_Y3);
+		else $display("Hint: Output '%s' has no mismatches.", "Y3");
 
 		$display("Hint: Total mismatched samples is %1d out of %1d samples\n", stats1.errors, stats1.clocks);
 		$display("Simulation finished at %0d ps", $time);
@@ -102,7 +102,7 @@ module tb();
 	end
 	
 	// Verification: XORs on the right makes any X in good_vector match anything, but X in dut_vector will only match X.
-	assign tb_match = ( { Y2_ref, Y4_ref } === ( { Y2_ref, Y4_ref } ^ { Y2_dut, Y4_dut } ^ { Y2_ref, Y4_ref } ) );
+	assign tb_match = ( { Y1_ref, Y3_ref } === ( { Y1_ref, Y3_ref } ^ { Y1_dut, Y3_dut } ^ { Y1_ref, Y3_ref } ) );
 	// Use explicit sensitivity list here. @(*) causes NetProc::nex_input() to be called when trying to compute
 	// the sensitivity list of the @(strobe) process, which isn't implemented.
 	always @(posedge clk, negedge clk) begin
@@ -112,12 +112,12 @@ module tb();
 			if (stats1.errors == 0) stats1.errortime = $time;
 			stats1.errors++;
 		end
-		if (Y2_ref !== ( Y2_ref ^ Y2_dut ^ Y2_ref ))
-		begin if (stats1.errors_Y2 == 0) stats1.errortime_Y2 = $time;
-			stats1.errors_Y2 = stats1.errors_Y2+1'b1; end
-		if (Y4_ref !== ( Y4_ref ^ Y4_dut ^ Y4_ref ))
-		begin if (stats1.errors_Y4 == 0) stats1.errortime_Y4 = $time;
-			stats1.errors_Y4 = stats1.errors_Y4+1'b1; end
+		if (Y1_ref !== ( Y1_ref ^ Y1_dut ^ Y1_ref ))
+		begin if (stats1.errors_Y1 == 0) stats1.errortime_Y1 = $time;
+			stats1.errors_Y1 = stats1.errors_Y1+1'b1; end
+		if (Y3_ref !== ( Y3_ref ^ Y3_dut ^ Y3_ref ))
+		begin if (stats1.errors_Y3 == 0) stats1.errortime_Y3 = $time;
+			stats1.errors_Y3 = stats1.errors_Y3+1'b1; end
 
 	end
 
