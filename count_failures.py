@@ -71,6 +71,7 @@ code_to_reason = {
     '.': 'No Mismatches',
     'r': 'Async reset found',
     'C': 'Compiler error',
+    'D': 'Simulation task in submitted source',
     'R': 'Runtime error'
 }
 
