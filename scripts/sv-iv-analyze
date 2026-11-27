@@ -9,6 +9,7 @@
 #  -c --csv            Write CSV file
 #     problemdirs      List of problems to analyze
 #
+# Use --strict-source to also flag direct simulation-only output or termination tasks.
 # Analyze the results from testing problems with iverilog. If no
 # problemdirs are given then just searches for all directories in the
 # current directory that start with Prob.
@@ -27,7 +28,6 @@ import glob
 from collections import OrderedDict
 from dataclasses import dataclass
 
-from langchain.schema   import SystemMessage, HumanMessage
 
 #-------------------------------------------------------------------------
 # Command line processing
@@ -49,6 +49,8 @@ def parse_cmdline():
   p.add_argument( "-v", "--verbose",  action="store_true" )
   p.add_argument( "-w", "--wide",     action="store_true" )
   p.add_argument( "-c", "--csv",      type=str )
+  p.add_argument( "--strict-source", action="store_true",
+                  help="flag direct simulation output or termination tasks in the submission" )
   p.add_argument( "problems", type=str, nargs="*" )
 
   opts = p.parse_args()
@@ -199,7 +201,18 @@ class Results:
 # analyze_result
 #-------------------------------------------------------------------------
 
-def analyze_result( results, problem, sample, generate_log, compile_log, verilog ):
+# Examine complete source tokens so ordinary comments, strings, and identifiers
+# cannot turn a working design into a policy failure.
+source_tokens = re.compile(
+  r'//[^\n]*|/\*.*?\*/|"(?:\\.|[^"\\])*"|\\\S+|[A-Za-z_$][\w$]*', re.DOTALL
+)
+simulation_tasks = {
+  '$display', '$write', '$strobe', '$monitor', '$fdisplay', '$fwrite',
+  '$fstrobe', '$fmonitor', '$fopen', '$finish', '$stop',
+}
+
+
+def analyze_result( results, problem, sample, generate_log, compile_log, verilog, strict_source=False ):
 
   # record to store result information
 
@@ -233,9 +246,10 @@ def analyze_result( results, problem, sample, generate_log, compile_log, verilog
 
     error_C     = False
     error_p     = False
-    no_mismatch = False
+    summary_seen = False
+    invalid_summary = False
 
-    mismatch_pattern = r'^Mismatches: (\d+) in \d+ samples$'
+    mismatch_pattern = r'Mismatches: ([0-9]{1,10}) in ([0-9]{1,10}) samples'
 
     for line in file:
 
@@ -281,13 +295,18 @@ def analyze_result( results, problem, sample, generate_log, compile_log, verilog
         result_record.passfail = 'T'
         break
 
-      match = re.match( mismatch_pattern, line )
-      if match:
-        num_mismatch = int(match.group(1))
-        if num_mismatch == 0:
-          no_mismatch = True
-        else:
-          result_record.num_mismatch = num_mismatch
+      if line.startswith("Mismatches:"):
+        match = re.fullmatch( mismatch_pattern, line.rstrip("\r\n") )
+        if summary_seen or not match:
+          invalid_summary = True
+        summary_seen = True
+        if match:
+          errors, samples = map(int, match.groups())
+          result_record.num_mismatch = max(result_record.num_mismatch, errors)
+          if samples == 0 or errors > samples:
+            invalid_summary = True
+
+    no_mismatch = summary_seen and not invalid_summary and result_record.num_mismatch == 0
 
     if result_record.passfail == '?' and error_p:
       result_record.passfail = 'p'
@@ -297,6 +316,14 @@ def analyze_result( results, problem, sample, generate_log, compile_log, verilog
 
     if result_record.passfail == '?' and no_mismatch:
       result_record.passfail = '.'
+
+  # Classify direct use of the listed simulation tasks separately. This is a
+  # source policy check, not authentication of the simulator output.
+
+  if strict_source and result_record.passfail == '.':
+    with open( verilog, 'r' ) as file:
+      if any(token.group(0) in simulation_tasks for token in source_tokens.finditer(file.read())):
+        result_record.passfail = 'D'
 
   # process verilog to identify possible runtime issues
 
@@ -355,7 +382,7 @@ def main():
       generate_log = f"{problem}/{problem}_sample{nsample:02}-sv-generate.log"
       compile_log  = f"{problem}/{problem}_sample{nsample:02}-sv-iv-test.log"
       verilog      = f"{problem}/{problem}_sample{nsample:02}.sv"
-      analyze_result( results, problem, nsample, generate_log, compile_log, verilog )
+      analyze_result( results, problem, nsample, generate_log, compile_log, verilog, opts.strict_source )
 
   # Print summary
 
